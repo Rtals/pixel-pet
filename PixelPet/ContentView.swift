@@ -51,10 +51,8 @@ struct PetView: View {
             return "이동 중"
         case .thinking:
             return "생각 중"
-        case .coding:
-            return "코딩 중"
-        case .runningCommand:
-            return "명령 실행 중"
+        case .working:
+            return "작업 중"
         case .waitingApproval:
             return "승인 대기 중"
         case .success:

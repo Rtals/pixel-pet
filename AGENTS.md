@@ -162,12 +162,16 @@ AI 이벤트
 - `idle`
 - `walking`
 - `thinking`
-- `coding`
-- `runningCommand`
+- `working`
 - `waitingApproval`
 - `success`
 - `error`
 - `disconnected`
+
+`working`은 코드 작성, 파일 처리, 명령 실행 등 AI가 작업을 수행하는 상태를
+통합해서 나타낸다.
+
+`working` 상태는 코딩하는 모습을 표현하는 애니메이션을 사용한다.
 
 ---
 

@@ -2,8 +2,7 @@ enum CharacterState: Equatable {
     case idle
     case walking
     case thinking
-    case coding
-    case runningCommand
+    case working
     case waitingApproval
     case success
     case error
