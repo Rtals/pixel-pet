@@ -5,6 +5,7 @@ xcuserdata/
 # Build output
 DerivedData/
 build/
+dist/
 
 # Swift Package Manager
 .build/
