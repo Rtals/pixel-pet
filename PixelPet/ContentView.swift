@@ -13,7 +13,10 @@ struct PetView: View {
     let onDragEnded: () -> Void
 
     var body: some View {
-        PixelPetSprite(isWalking: model.isWalking, frame: model.animationFrame)
+        PixelPetSprite(
+            characterState: model.characterState,
+            frame: model.animationFrame
+        )
             .scaleEffect(x: model.isFacingRight ? 1 : -1, y: 1)
             .contentShape(Rectangle())
             .gesture(
@@ -33,15 +36,43 @@ struct PetView: View {
                 }
             }
             .accessibilityLabel("PixelPet")
-            .accessibilityValue(model.isPaused ? "멈춤" : "이동 중")
+            .accessibilityValue(accessibilityValue)
+    }
+
+    private var accessibilityValue: String {
+        if model.isPaused {
+            return "멈춤"
+        }
+
+        switch model.characterState {
+        case .idle:
+            return "쉬는 중"
+        case .walking:
+            return "이동 중"
+        case .thinking:
+            return "생각 중"
+        case .coding:
+            return "코딩 중"
+        case .runningCommand:
+            return "명령 실행 중"
+        case .waitingApproval:
+            return "승인 대기 중"
+        case .success:
+            return "작업 성공"
+        case .error:
+            return "오류"
+        case .disconnected:
+            return "연결 끊김"
+        }
     }
 }
 
 private struct PixelPetSprite: View {
-    let isWalking: Bool
+    let characterState: CharacterState
     let frame: Int
 
     private let pixelSize: CGFloat = 6
+    private var isWalking: Bool { characterState == .walking }
 
     private var pixels: [Pixel] {
         var result: [Pixel] = [

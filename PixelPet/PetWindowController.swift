@@ -1,14 +1,5 @@
 import AppKit
-import Combine
 import SwiftUI
-
-@MainActor
-final class PetModel: ObservableObject {
-    @Published var isWalking = false
-    @Published var isFacingRight = true
-    @Published var animationFrame = 0
-    @Published var isPaused = false
-}
 
 @MainActor
 final class PetWindowController {
@@ -94,13 +85,13 @@ final class PetWindowController {
         lastTick = now
 
         guard !model.isPaused, dragStartOrigin == nil else {
-            model.isWalking = false
+            model.transition(to: .idle)
             return
         }
 
         switch motionPhase {
         case .resting(let until):
-            model.isWalking = false
+            model.transition(to: .idle)
             if now >= until {
                 chooseNextMotion(at: now)
             }
@@ -117,7 +108,7 @@ final class PetWindowController {
         guard abs(remainingDistance) > 1 else {
             panel.setFrameOrigin(CGPoint(x: targetX, y: origin.y))
             motionPhase = .resting(until: now + .random(in: 1.0...3.0))
-            model.isWalking = false
+            model.transition(to: .idle)
             return
         }
 
@@ -125,7 +116,7 @@ final class PetWindowController {
         let speed: CGFloat = 48
         let step = min(abs(remainingDistance), speed * deltaTime)
         model.isFacingRight = direction > 0
-        model.isWalking = true
+        model.transition(to: .walking)
 
         animationAccumulator += deltaTime
         if animationAccumulator >= 0.22 {
