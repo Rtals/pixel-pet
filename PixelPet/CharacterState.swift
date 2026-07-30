@@ -1,4 +1,4 @@
-enum CharacterState: Equatable {
+enum CharacterState: CaseIterable, Equatable {
     case idle
     case walking
     case thinking

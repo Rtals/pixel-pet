@@ -10,13 +10,14 @@ final class PetWindowController {
 
     private let petSize = CGSize(width: 96, height: 96)
     private let model = PetModel()
+    private let animationController = AnimationController()
     private let panel: NSPanel
 
     private var timer: Timer?
     private var motionPhase: MotionPhase = .resting(until: 0)
     private var lastTick = ProcessInfo.processInfo.systemUptime
-    private var animationAccumulator: TimeInterval = 0
     private var dragStartOrigin: CGPoint?
+    private var previewState: CharacterState?
 
     init() {
         panel = NSPanel(
@@ -30,11 +31,18 @@ final class PetWindowController {
 
         let petView = PetView(
             model: model,
+            animationController: animationController,
             onDrag: { [weak self] translation in
                 self?.dragPet(by: translation)
             },
             onDragEnded: { [weak self] in
                 self?.finishDragging()
+            },
+            onPreviewState: { [weak self] state in
+                self?.preview(state)
+            },
+            onResumeAutomaticState: { [weak self] in
+                self?.resumeAutomaticState()
             }
         )
         panel.contentView = NSHostingView(rootView: petView)
@@ -84,21 +92,24 @@ final class PetWindowController {
         let deltaTime = min(now - lastTick, 0.05)
         lastTick = now
 
-        guard !model.isPaused, dragStartOrigin == nil else {
+        if let previewState {
+            model.transition(to: previewState)
+        } else if model.isPaused || dragStartOrigin != nil {
             model.transition(to: .idle)
-            return
-        }
+        } else {
+            switch motionPhase {
+            case .resting(let until):
+                model.transition(to: .idle)
+                if now >= until {
+                    chooseNextMotion(at: now)
+                }
 
-        switch motionPhase {
-        case .resting(let until):
-            model.transition(to: .idle)
-            if now >= until {
-                chooseNextMotion(at: now)
+            case .walking(let targetX):
+                walk(toward: targetX, deltaTime: deltaTime, now: now)
             }
-
-        case .walking(let targetX):
-            walk(toward: targetX, deltaTime: deltaTime, now: now)
         }
+
+        animationController.update(for: model.characterState, deltaTime: deltaTime)
     }
 
     private func walk(toward targetX: CGFloat, deltaTime: TimeInterval, now: TimeInterval) {
@@ -117,12 +128,6 @@ final class PetWindowController {
         let step = min(abs(remainingDistance), speed * deltaTime)
         model.isFacingRight = direction > 0
         model.transition(to: .walking)
-
-        animationAccumulator += deltaTime
-        if animationAccumulator >= 0.22 {
-            animationAccumulator = 0
-            model.animationFrame = model.animationFrame == 0 ? 1 : 0
-        }
 
         let nextOrigin = CGPoint(
             x: origin.x + direction * step,
@@ -168,6 +173,19 @@ final class PetWindowController {
         motionPhase = .resting(
             until: ProcessInfo.processInfo.systemUptime + 0.8
         )
+    }
+
+    private func preview(_ state: CharacterState) {
+        previewState = state
+        model.transition(to: state)
+    }
+
+    private func resumeAutomaticState() {
+        previewState = nil
+        motionPhase = .resting(
+            until: ProcessInfo.processInfo.systemUptime + 0.5
+        )
+        model.transition(to: .idle)
     }
 
     private func clampedOrigin(_ origin: CGPoint) -> CGPoint {
