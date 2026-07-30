@@ -13,7 +13,6 @@ struct PetView: View {
     let onDrag: (CGSize) -> Void
     let onDragEnded: () -> Void
     let onPreviewState: (CharacterState) -> Void
-    let onResumeAutomaticState: () -> Void
 
     var body: some View {
         PixelPetSprite(
@@ -37,12 +36,6 @@ struct PetView: View {
                         Button(state.menuTitle) {
                             onPreviewState(state)
                         }
-                    }
-
-                    Divider()
-
-                    Button("자동 상태로 돌아가기") {
-                        onResumeAutomaticState()
                     }
                 }
 

@@ -40,9 +40,6 @@ final class PetWindowController {
             },
             onPreviewState: { [weak self] state in
                 self?.preview(state)
-            },
-            onResumeAutomaticState: { [weak self] in
-                self?.resumeAutomaticState()
             }
         )
         panel.contentView = NSHostingView(rootView: petView)
@@ -176,12 +173,18 @@ final class PetWindowController {
     }
 
     private func preview(_ state: CharacterState) {
+        guard state != .idle else {
+            resumeAutomaticState()
+            return
+        }
+
         previewState = state
         model.transition(to: state)
     }
 
     private func resumeAutomaticState() {
         previewState = nil
+        model.isPaused = false
         motionPhase = .resting(
             until: ProcessInfo.processInfo.systemUptime + 0.5
         )
