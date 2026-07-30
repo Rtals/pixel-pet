@@ -1,6 +1,5 @@
 enum CharacterState: CaseIterable, Equatable {
     case idle
-    case walking
     case thinking
     case working
     case waitingApproval

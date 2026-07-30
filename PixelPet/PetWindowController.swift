@@ -127,7 +127,7 @@ final class PetWindowController {
         let speed: CGFloat = 48
         let step = min(abs(remainingDistance), speed * deltaTime)
         model.isFacingRight = direction > 0
-        model.transition(to: .walking)
+        model.transition(to: .idle)
 
         let nextOrigin = CGPoint(
             x: origin.x + direction * step,

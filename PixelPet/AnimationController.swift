@@ -43,8 +43,6 @@ private struct AnimationDefinition {
     static func animation(for state: CharacterState) -> AnimationDefinition {
         switch state {
         case .idle:
-            return AnimationDefinition(frameCount: 2, frameDuration: 0.65, repeats: true)
-        case .walking:
             return AnimationDefinition(frameCount: 2, frameDuration: 0.22, repeats: true)
         case .thinking:
             return AnimationDefinition(frameCount: 3, frameDuration: 0.45, repeats: true)

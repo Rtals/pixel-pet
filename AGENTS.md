@@ -160,13 +160,15 @@ AI 이벤트
 현재 상태:
 
 - `idle`
-- `walking`
 - `thinking`
 - `working`
 - `waitingApproval`
 - `success`
 - `error`
 - `disconnected`
+
+`idle`은 캐릭터의 기본 상태이며, 이동 여부와 관계없이 걷는 모습의
+애니메이션을 사용한다.
 
 `working`은 코드 작성, 파일 처리, 명령 실행 등 AI가 작업을 수행하는 상태를
 통합해서 나타낸다.

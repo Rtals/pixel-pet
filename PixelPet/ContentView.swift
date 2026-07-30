@@ -63,9 +63,7 @@ struct PetView: View {
 
         switch model.characterState {
         case .idle:
-            return "쉬는 중"
-        case .walking:
-            return "이동 중"
+            return "대기 중"
         case .thinking:
             return "생각 중"
         case .working:
@@ -87,7 +85,7 @@ private struct PixelPetSprite: View {
     let frame: Int
 
     private let pixelSize: CGFloat = 6
-    private var isWalking: Bool { characterState == .walking }
+    private var usesWalkingAnimation: Bool { characterState == .idle }
 
     private var pixels: [Pixel] {
         var result: [Pixel] = [
@@ -170,8 +168,8 @@ private struct PixelPetSprite: View {
             Pixel(x: 11, y: 9, color: .petOutline)
         ]
 
-        let leftFootX = isWalking && frame == 0 ? 4 : 5
-        let rightFootX = isWalking && frame == 0 ? 11 : 10
+        let leftFootX = usesWalkingAnimation && frame == 0 ? 4 : 5
+        let rightFootX = usesWalkingAnimation && frame == 0 ? 11 : 10
         result.append(contentsOf: [
             Pixel(x: leftFootX, y: 10, color: .petOutline),
             Pixel(x: leftFootX + 1, y: 10, color: .petOutline),
@@ -185,7 +183,7 @@ private struct PixelPetSprite: View {
 
     private var statePixels: [Pixel] {
         switch characterState {
-        case .idle, .walking:
+        case .idle:
             return []
         case .thinking:
             let dots = [
@@ -260,8 +258,8 @@ private struct PixelPetSprite: View {
     private var verticalOffset: CGFloat {
         switch characterState {
         case .idle:
-            return frame == 0 ? 0 : 1
-        case .walking, .working:
+            return frame == 0 ? 0 : -2
+        case .working:
             return frame == 0 ? 0 : -2
         case .success:
             return [0, -5, -9, -3][min(frame, 3)]
@@ -333,8 +331,6 @@ private extension CharacterState {
         switch self {
         case .idle:
             return "대기"
-        case .walking:
-            return "걷기"
         case .thinking:
             return "생각"
         case .working:
