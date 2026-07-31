@@ -8,7 +8,7 @@ final class PetWindowController {
         case walking(targetX: CGFloat)
     }
 
-    private let petSize = CGSize(width: 96, height: 96)
+    private let petSize = CGSize(width: 112, height: 112)
     private let model = PetModel()
     private let animationController = AnimationController()
     private let panel: NSPanel
