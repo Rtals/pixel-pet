@@ -17,6 +17,7 @@ final class PetWindowController {
     private var motionPhase: MotionPhase = .resting(until: 0)
     private var lastTick = ProcessInfo.processInfo.systemUptime
     private var dragStartOrigin: CGPoint?
+    private var dragStartMouseLocation: CGPoint?
     private var previewState: CharacterState?
 
     init() {
@@ -32,8 +33,8 @@ final class PetWindowController {
         let petView = PetView(
             model: model,
             animationController: animationController,
-            onDrag: { [weak self] translation in
-                self?.dragPet(by: translation)
+            onDrag: { [weak self] in
+                self?.dragPet()
             },
             onDragEnded: { [weak self] in
                 self?.finishDragging()
@@ -51,7 +52,7 @@ final class PetWindowController {
         let visibleFrame = screen.visibleFrame
         let initialOrigin = CGPoint(
             x: visibleFrame.midX - petSize.width / 2,
-            y: visibleFrame.minY + 24
+            y: visibleFrame.minY
         )
         panel.setFrameOrigin(initialOrigin)
         panel.orderFrontRegardless()
@@ -128,7 +129,7 @@ final class PetWindowController {
 
         let nextOrigin = CGPoint(
             x: origin.x + direction * step,
-            y: floorY(for: panel.screen)
+            y: origin.y
         )
         panel.setFrameOrigin(nextOrigin)
     }
@@ -148,25 +149,30 @@ final class PetWindowController {
         }
     }
 
-    private func floorY(for screen: NSScreen?) -> CGFloat {
-        (screen ?? NSScreen.main)?.visibleFrame.minY ?? panel.frame.minY
-    }
-
-    private func dragPet(by translation: CGSize) {
+    private func dragPet() {
         if dragStartOrigin == nil {
             dragStartOrigin = panel.frame.origin
+            dragStartMouseLocation = NSEvent.mouseLocation
         }
-        guard let start = dragStartOrigin else { return }
+        guard
+            let startOrigin = dragStartOrigin,
+            let startMouseLocation = dragStartMouseLocation
+        else {
+            return
+        }
+
+        let mouseLocation = NSEvent.mouseLocation
 
         let proposed = CGPoint(
-            x: start.x + translation.width,
-            y: start.y - translation.height
+            x: startOrigin.x + mouseLocation.x - startMouseLocation.x,
+            y: startOrigin.y + mouseLocation.y - startMouseLocation.y
         )
         panel.setFrameOrigin(clampedOrigin(proposed))
     }
 
     private func finishDragging() {
         dragStartOrigin = nil
+        dragStartMouseLocation = nil
         motionPhase = .resting(
             until: ProcessInfo.processInfo.systemUptime + 0.8
         )

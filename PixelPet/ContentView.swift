@@ -10,7 +10,7 @@ import SwiftUI
 struct PetView: View {
     @ObservedObject var model: PetModel
     @ObservedObject var animationController: AnimationController
-    let onDrag: (CGSize) -> Void
+    let onDrag: () -> Void
     let onDragEnded: () -> Void
     let onPreviewState: (CharacterState) -> Void
 
@@ -19,11 +19,11 @@ struct PetView: View {
             characterState: model.characterState,
             frame: animationController.frame
         )
-            .scaleEffect(x: model.isFacingRight ? 1 : -1, y: 1)
+            .scaleEffect(x: model.isFacingRight ? -1 : 1, y: 1)
             .contentShape(Rectangle())
             .gesture(
-                DragGesture()
-                    .onChanged { onDrag($0.translation) }
+                DragGesture(minimumDistance: 0)
+                    .onChanged { _ in onDrag() }
                     .onEnded { _ in onDragEnded() }
             )
             .contextMenu {
