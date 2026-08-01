@@ -77,12 +77,14 @@ final class PetWindowController {
     }
 
     private func startTimer() {
-        timer = Timer.scheduledTimer(withTimeInterval: 1.0 / 60.0, repeats: true) {
+        let timer = Timer(timeInterval: 1.0 / 60.0, repeats: true) {
             [weak self] _ in
             MainActor.assumeIsolated {
                 self?.tick()
             }
         }
+        RunLoop.main.add(timer, forMode: .common)
+        self.timer = timer
     }
 
     private func tick() {
