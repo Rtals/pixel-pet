@@ -9,17 +9,27 @@ import SwiftUI
 
 struct PetView: View {
     @ObservedObject var model: PetModel
-    @ObservedObject var animationController: AnimationController
+    let animationController: AnimationController
     let onDrag: () -> Void
     let onDragEnded: () -> Void
     let onPreviewState: (CharacterState) -> Void
 
     var body: some View {
-        CatCharacterSprite(
-            characterState: model.characterState,
-            frame: animationController.frame
-        )
+        ZStack {
+            AnimatedCatCharacterSprite(
+                characterState: model.characterState,
+                animationController: animationController
+            )
+
+            interactionLayer
+        }
             .scaleEffect(x: model.isFacingRight ? -1 : 1, y: 1)
+            .accessibilityLabel("PixelPet")
+            .accessibilityValue(accessibilityValue)
+    }
+
+    private var interactionLayer: some View {
+        Color.clear
             .contentShape(Rectangle())
             .gesture(
                 DragGesture(minimumDistance: 0)
@@ -45,8 +55,6 @@ struct PetView: View {
                     NSApplication.shared.terminate(nil)
                 }
             }
-            .accessibilityLabel("PixelPet")
-            .accessibilityValue(accessibilityValue)
     }
 
     private var accessibilityValue: String {
@@ -70,6 +78,18 @@ struct PetView: View {
         case .disconnected:
             return "연결 끊김"
         }
+    }
+}
+
+private struct AnimatedCatCharacterSprite: View {
+    let characterState: CharacterState
+    @ObservedObject var animationController: AnimationController
+
+    var body: some View {
+        CatCharacterSprite(
+            characterState: characterState,
+            frame: animationController.frame
+        )
     }
 }
 

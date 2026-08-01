@@ -92,6 +92,14 @@ final class PetWindowController {
         let deltaTime = min(now - lastTick, 0.05)
         lastTick = now
 
+        if RunLoop.current.currentMode == .eventTracking {
+            animationController.update(
+                for: model.characterState,
+                deltaTime: deltaTime
+            )
+            return
+        }
+
         if let previewState {
             model.transition(to: previewState)
         } else if model.isPaused || dragStartOrigin != nil {
@@ -126,7 +134,10 @@ final class PetWindowController {
         let direction: CGFloat = remainingDistance > 0 ? 1 : -1
         let speed: CGFloat = 48
         let step = min(abs(remainingDistance), speed * deltaTime)
-        model.isFacingRight = direction > 0
+        let isFacingRight = direction > 0
+        if model.isFacingRight != isFacingRight {
+            model.isFacingRight = isFacingRight
+        }
         model.transition(to: .idle)
 
         let nextOrigin = CGPoint(
