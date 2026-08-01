@@ -45,17 +45,17 @@ private struct AnimationDefinition {
         case .idle:
             return AnimationDefinition(frameCount: 2, frameDuration: 0.22, repeats: true)
         case .thinking:
-            return AnimationDefinition(frameCount: 3, frameDuration: 0.45, repeats: true)
+            return AnimationDefinition(frameCount: 6, frameDuration: 0.24, repeats: true)
         case .working:
-            return AnimationDefinition(frameCount: 2, frameDuration: 0.18, repeats: true)
+            return AnimationDefinition(frameCount: 4, frameDuration: 0.12, repeats: true)
         case .waitingApproval:
             return AnimationDefinition(frameCount: 2, frameDuration: 0.5, repeats: true)
         case .success:
-            return AnimationDefinition(frameCount: 4, frameDuration: 0.14, repeats: false)
+            return AnimationDefinition(frameCount: 12, frameDuration: 0.14, repeats: false)
         case .error:
             return AnimationDefinition(frameCount: 2, frameDuration: 0.22, repeats: true)
         case .disconnected:
-            return AnimationDefinition(frameCount: 2, frameDuration: 0.8, repeats: true)
+            return AnimationDefinition(frameCount: 2, frameDuration: 0.65, repeats: true)
         }
     }
 }
